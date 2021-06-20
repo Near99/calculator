@@ -3,7 +3,6 @@ body {
   display: flex;
   flex-flow: row;
   justify-content: center;
-  padding-top: 5%;
   font-family: sans-serif;
 }
 
@@ -12,8 +11,6 @@ body {
   border-radius: 45px;
   width: 563px;
   height: 1218px;
-
-  /* border: black solid 2px; */
 }
 
 .display {
@@ -24,8 +21,6 @@ body {
   padding: 35px;
   justify-content: flex-end;
   align-items: flex-end;
-
-  /* border: chocolate solid 2px; */
 }
 
 .pre-entry {
@@ -52,8 +47,6 @@ body {
   border-radius: 45px;
   height: 55%;
   padding: 20px 20px 60px 20px;
-
-  /* border: cadetblue solid 2px; */
 }
 
 .keyboard > button {
