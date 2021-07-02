@@ -1,84 +1,65 @@
-body {
-  background-color: #f3f4fd;
-  display: flex;
-  flex-flow: row;
-  justify-content: center;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   font-family: sans-serif;
-  padding: none;
+  font-weight: normal;
 }
 
-.calculator {
-  background-color: #f6f8f9;
-  border-radius: 45px;
-  width: 563px;
-  height: 1218px;
+body {
+  padding: 0;
+  margin: 0;
+  background: linear-gradient(to right, #00aaff, #00ff6c);
 }
 
-.display {
-  display: flex;
-  height: 35%;
-  flex-flow: column;
-  font-size: xx-large;
-  padding: 35px;
-  justify-content: flex-end;
-  align-items: flex-end;
-}
-
-.pre-entry {
-  padding-bottom: 30px;
-  color: #acaeb0;
-  word-wrap: break-word;
-  word-break: break-word;
-}
-
-.cur-entry {
-  font-size: 55px;
-  font-weight: bold;
-  word-wrap: break-word;
-  word-break: break-word;
-}
-
-.keyboard {
-  background-color: #f6f8f9;
+.calculator-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(5, 1fr);
-  row-gap: 30px;
-  column-gap: 30px;
-  border-radius: 45px;
-  height: 55%;
-  padding: 20px 20px 60px 20px;
+  justify-content: center;
+  /* difference between align-content and align-items  */
+  align-content: center;
+  /* study later  */
+  min-height: 100vh;
+  grid-template-columns: repeat(4, 100px);
+  grid-template-rows: minmax(120px, auto) repeat(5, 100px);
 }
 
-.keyboard > button {
-  border-radius: 45px;
-  border: none;
-  font-size: xx-large;
+.calculator-grid > button {
+  cursor: pointer;
+  /* study unit  */
+  font-size: 2rem;
+  border: 1px solid #fff;
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.75);
 }
 
-.b-orange {
-  background-color: #fa9725;
+.calculator-grid > button:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.span-two {
+  grid-column: span 2;
+}
+
+.output {
+  /* from the first column to the last  */
+  grid-column: 1 / -1;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  flex-direction: column;
+  padding: 10px;
+  /* study these two  */
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+.output .previous-operand {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.5rem;
+}
+
+.output .current-operand {
   color: #fff;
-}
-
-.b-green {
-  background-color: #4fc378;
-  color: #fff;
-}
-
-.b-normal {
-  background-color: #e9eff3;
-}
-
-.b-red {
-  background-color: #f7ecec;
-  color: #ee5853;
-}
-
-.b-0 {
-  grid-column: 1 / 3;
-}
-
-.keyboard > button:focus {
-  background-color: #dbdbdb;
+  font-size: 2.5rem;
 }

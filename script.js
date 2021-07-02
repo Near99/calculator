@@ -1,114 +1,136 @@
-const kbdNumbers = document.querySelectorAll('[data-kbd]');
-const kbdOperator = document.querySelectorAll('[date-operator]');
-const currentEntry = document.querySelector('.cur-entry');
-const preEntry = document.querySelector('.pre-entry');
-const clearAll = document.querySelector('[data-clear]');
-const period = document.querySelector('[data-dot]');
-const kbdequal = document.querySelector('[date-equal]');
-const kbdPercent = document.querySelector('[date-percent]');
-const kbdpm = document.querySelector('[date-pm]');
+const numberButtons = document.querySelectorAll('[data-number]');
+const operationButtons = document.querySelectorAll('[data-operation]');
+const equalsButton = document.querySelector('[data-equals]');
+const deleteButton = document.querySelector('[data-delete]');
+const allClearButton = document.querySelector('[data-all-clear]');
+const previousOperandTextElement = document.querySelector(
+  '[data-previous-operand]'
+);
+const currentOperandTextElement = document.querySelector(
+  '[data-current-operand]'
+);
 
-currentEntry.innerHTML = '0';
-let previousOperator = '';
-let splitUsedOperator = '';
-
-// Calculation
-const add = (num1, num2) => num1 + num2;
-const subtract = (num1, num2) => num1 - num2;
-const multiply = (num1, num2) => num1 * num2;
-const divide = (num1, num2) => num1 / num2;
-
-const operate = (num1, num2, operate) => {
-  switch (operate) {
-    case '+':
-      return add(num1, num2).toString();
-    case '−':
-      return subtract(num1, num2).toString();
-    case '×':
-      return multiply(num1, num2).toString();
-    case '÷':
-      return divide(num1, num2).toString();
+class Calculator {
+  constructor(previousOperandTextElement, currentOperandTextElement) {
+    this.previousOperandTextElement = previousOperandTextElement;
+    this.currentOperandTextElement = currentOperandTextElement;
+    this.clear();
   }
-};
 
-// DOM
-const KbdNumbers = kbdNumbers.forEach((item) =>
-  item.addEventListener('click', (e) => {
-    if (currentEntry.innerHTML == '0' && e.target.innerHTML == '0') return;
-    if (currentEntry.innerHTML == '0' && e.target.innerHTML !== '0') {
-      currentEntry.innerHTML = e.target.innerHTML;
+  clear() {
+    this.currentOperand = '';
+    this.previousOperand = '';
+    this.operation = undefined;
+  }
+
+  delete() {
+    this.currentOperand = this.currentOperand.toString().slice(0, -1);
+  }
+
+  appendNumber(number) {
+    if (number === '.' && this.currentOperand.includes('.')) return;
+    this.currentOperand = this.currentOperand.toString() + number.toString();
+  }
+
+  chooseOperation(operation) {
+    if (this.currentOperand === '') return;
+    if (this.previousOperand !== '') {
+      this.compute();
+    }
+    this.operation = operation;
+    this.previousOperand = this.currentOperand;
+    this.currentOperand = '';
+  }
+
+  compute() {
+    let computation;
+    const prev = parseFloat(this.previousOperand);
+    const current = parseFloat(this.currentOperand);
+    if (isNaN(prev) || isNaN(current)) return;
+    switch (this.operation) {
+      case '+':
+        computation = prev + current;
+        break;
+      case '−':
+        computation = prev - current;
+        break;
+      case '×':
+        computation = prev * current;
+        break;
+      case '÷':
+        computation = prev / current;
+        break;
+      default:
+        return;
+    }
+    this.currentOperand = computation;
+    this.operation = undefined;
+    this.previousOperand = '';
+  }
+
+  getDisplayNumber(number) {
+    const stringNumber = number.toString();
+    const integerDigits = parseFloat(stringNumber.split('.')[0]);
+    const decimalDigits = stringNumber.split('.')[1];
+    let integerDisplay;
+    if (isNaN(integerDigits)) {
+      integerDisplay = '';
     } else {
-      currentEntry.innerHTML += e.target.innerHTML;
+      integerDisplay = integerDigits.toLocaleString('en', {
+        maximumFractionDigits: 0,
+      });
     }
-  })
-);
-
-const KbdOperator = kbdOperator.forEach((item) =>
-  item.addEventListener('click', (e) => {
-    previousOperator = e.target.innerHTML;
-    if (splitUsedOperator == '') {
-      splitUsedOperator = previousOperator;
-    }
-    if (
-      currentEntry.innerHTML.includes('+') ||
-      currentEntry.innerHTML.includes('−') ||
-      currentEntry.innerHTML.includes('×') ||
-      currentEntry.innerHTML.includes('÷')
-    ) {
-      let [num1, num2] = currentEntry.innerHTML.split(splitUsedOperator);
-      preEntry.innerHTML = currentEntry.innerHTML;
-      currentEntry.innerHTML = operate(
-        Number(num1),
-        Number(num2),
-        splitUsedOperator
-      );
-      currentEntry.innerHTML += e.target.innerHTML;
-      splitUsedOperator = e.target.innerHTML;
+    if (decimalDigits != null) {
+      return `${integerDisplay}.${decimalDigits}`;
     } else {
-      currentEntry.innerHTML += e.target.innerHTML;
+      return integerDisplay;
     }
-  })
+  }
+
+  updateDisplay() {
+    this.currentOperandTextElement.innerText = this.getDisplayNumber(
+      this.currentOperand
+    );
+    if (this.operation != null) {
+      this.previousOperandTextElement.innerText = `${this.getDisplayNumber(
+        this.previousOperand
+      )} ${this.operation}`;
+    } else {
+      this.previousOperandTextElement.innerText = '';
+    }
+  }
+}
+
+const calculator = new Calculator(
+  previousOperandTextElement,
+  currentOperandTextElement
 );
 
-const dot = period.addEventListener('click', (e) => {
-  if (currentEntry.innerHTML.includes('.')) return;
-  if ((currentEntry.innerHTML = '0')) {
-    currentEntry.innerHTML += e.target.innerHTML;
-  } else {
-    currentEntry.innerHTML = e.target.innerHTML;
-  }
+numberButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    calculator.appendNumber(button.innerText);
+    calculator.updateDisplay();
+  });
 });
 
-const clear = clearAll.addEventListener('click', () => {
-  currentEntry.innerHTML = '0';
-  previousOperator = '';
-  splitUsedOperator = '';
+operationButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    calculator.chooseOperation(button.innerText);
+    calculator.updateDisplay();
+  });
 });
 
-const equal = kbdequal.addEventListener('click', () => {
-  let [num1, num2] = currentEntry.innerHTML.split(previousOperator);
-  preEntry.innerHTML = currentEntry.innerHTML;
-  currentEntry.innerHTML = operate(
-    Number(num1),
-    Number(num2),
-    previousOperator
-  );
-  previousOperator = '';
-  splitUsedOperator = '';
+equalsButton.addEventListener('click', () => {
+  calculator.compute();
+  calculator.updateDisplay();
 });
 
-const precent = kbdPercent.addEventListener('click', (e) => {
-  if (
-    currentEntry.innerHTML.includes('+') ||
-    currentEntry.innerHTML.includes('−') ||
-    currentEntry.innerHTML.includes('×') ||
-    currentEntry.innerHTML.includes('÷')
-  ) {
-    return;
-  }
-  currentEntry.innerHTML = (Number(currentEntry.innerHTML) / 100).toString();
+allClearButton.addEventListener('click', () => {
+  calculator.clear();
+  calculator.updateDisplay();
 });
 
-const pm = kbdpm.addEventListener('click', () =>
-  alert('WOW, You have just found that I have not completed this feature!')
-);
+deleteButton.addEventListener('click', () => {
+  calculator.delete();
+  calculator.updateDisplay();
+});
